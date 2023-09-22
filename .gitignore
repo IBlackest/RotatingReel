@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.idea/compiler.xml
+/.idea/gradle.xml
+/.idea/deploymentTargetDropDown.xml
+/.idea/kotlinc.xml
+/.idea/misc.xml
+/.idea/workspace.xml
+/.idea/vcs.xml
