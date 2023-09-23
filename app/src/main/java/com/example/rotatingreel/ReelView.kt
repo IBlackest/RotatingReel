@@ -14,13 +14,13 @@ class ReelView @JvmOverloads constructor (
 ) : View(context, attrs, defStyle) {
 
     private val colors: ArrayList<Int> = arrayListOf(
-        ContextCompat.getColor(context, R.color.red),
-        ContextCompat.getColor(context, R.color.orange),
-        ContextCompat.getColor(context, R.color.yellow),
-        ContextCompat.getColor(context, R.color.green),
-        ContextCompat.getColor(context, R.color.light_blue),
-        ContextCompat.getColor(context, R.color.deep_blue),
         ContextCompat.getColor(context, R.color.purple),
+        ContextCompat.getColor(context, R.color.deep_blue),
+        ContextCompat.getColor(context, R.color.light_blue),
+        ContextCompat.getColor(context, R.color.green),
+        ContextCompat.getColor(context, R.color.yellow),
+        ContextCompat.getColor(context, R.color.orange),
+        ContextCompat.getColor(context, R.color.red),
     )
 
     private var viewWidth: Int = 0
@@ -35,16 +35,14 @@ class ReelView @JvmOverloads constructor (
         viewWidth = this.measuredWidth
         viewHeight = this.measuredHeight
 
-        //canvas.drawColor(ContextCompat.getColor(context, R.color.black))
-
         if (viewWidth > viewHeight){
             side = viewHeight
         } else {
             side = viewWidth
         }
 
-        var sweepAngle: Float = (360f / colors.size)
-        var startAngle = (180f - sweepAngle * 3) / 2
+        val sweepAngle: Float = (360f / colors.size)
+        var startAngle = 90f
 
         for (color in colors) {
             paint.color = color
