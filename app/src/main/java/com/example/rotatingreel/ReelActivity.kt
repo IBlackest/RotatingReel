@@ -8,7 +8,7 @@ import android.view.animation.Animation.AnimationListener
 import android.view.animation.RotateAnimation
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
@@ -24,6 +24,11 @@ class ReelActivity : AppCompatActivity() {
     private var fromDegrees: Float? = null
     private var toDegrees: Float? = null
     private var rotationAngle = 0f
+    private var reelWidth = 0
+    private var reelHeight = 0
+    private var reelMarginTop = 0
+    private var pixels = 0
+    private lateinit var params: LayoutParams
 
     private var animationListener = object : AnimationListener {
         override fun onAnimationStart(p0: Animation?) {
@@ -53,22 +58,33 @@ class ReelActivity : AppCompatActivity() {
     }
 
     private fun initSlider() {
-        val mMin = 0
-        val mMax = 100
-        var mCurrent = 50
+        val min = 0
+        val max = 100
+        var current = 50
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            binding.slider.min = mMin
-            binding.slider.max = mMax
+            binding.slider.min = min
+            binding.slider.max = max
         }
-        binding.slider.progress = mCurrent
+        binding.slider.progress = current
         binding.slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                mCurrent = p1
+            override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
+                changeReelSize(progress - current)
+                current = progress
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {}
             override fun onStopTrackingTouch(p0: SeekBar?) {}
         })
+    }
+
+    private fun changeReelSize(progress: Int) {
+        params = binding.reelView.layoutParams as LayoutParams
+        reelWidth = binding.reelView.width
+        reelHeight = binding.reelView.height
+        pixels = progress * 4
+        params.width = reelWidth + pixels
+        params.height = reelHeight + pixels
+        binding.reelView.layoutParams = params
     }
 
     private fun rotate() {
@@ -136,7 +152,6 @@ class ReelActivity : AppCompatActivity() {
             .load(imageUri)
             .transform(CenterCrop())
             .into(binding.image)
-        binding.image.invalidate()
         clearText()
     }
 
@@ -147,7 +162,6 @@ class ReelActivity : AppCompatActivity() {
 
     private fun clearImage() {
         Glide.with(this).clear(binding.image)
-        binding.image.invalidate()
     }
 
     private fun initDrawText() {
@@ -156,11 +170,11 @@ class ReelActivity : AppCompatActivity() {
             clone(binding.root)
         }
         drawText = DrawTextView(this).apply {
-            layoutParams = ConstraintLayout.LayoutParams(
+            layoutParams = LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 200
             )
-            updateLayoutParams<ConstraintLayout.LayoutParams> {
+            updateLayoutParams<LayoutParams> {
                 startToStart = R.id.parent
                 endToEnd = R.id.parent
                 bottomToTop = R.id.image

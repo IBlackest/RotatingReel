@@ -2,6 +2,7 @@ package com.example.rotatingreel
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
@@ -36,6 +37,8 @@ class ReelView @JvmOverloads constructor (
     override fun onDraw(canvas: Canvas) {
         viewWidth = this.measuredWidth
         viewHeight = this.measuredHeight
+
+        canvas.drawColor(Color.BLACK)
 
         side = if (viewWidth > viewHeight){
             viewHeight

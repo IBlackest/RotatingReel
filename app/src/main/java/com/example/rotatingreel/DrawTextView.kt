@@ -39,6 +39,6 @@ class DrawTextView @JvmOverloads constructor(
     }
 
     companion object {
-        private const val TEXT_SIZE = 70f
+        private const val TEXT_SIZE = 100f
     }
 }
