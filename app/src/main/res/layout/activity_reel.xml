@@ -11,30 +11,19 @@
         android:id="@+id/reel_view"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginStart="80dp"
         android:layout_marginTop="100dp"
-        android:elevation="15dp"
+        app:layout_constraintEnd_toStartOf="@id/slider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <RelativeLayout
-        android:id="@+id/slider_layout"
-        android:layout_marginTop="24dp"
-        android:layout_width="350dp"
+    <com.example.rotatingreel.VerticalSlider
+        android:id="@+id/slider"
+        android:layout_width="40dp"
         android:layout_height="300dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/reel_view"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/slider"
-            android:layout_centerVertical="true"
-            android:layout_width="300dp"
-            android:layout_marginStart="70dp"
-            android:layout_height="300dp"
-            android:rotation="270" />
-
-    </RelativeLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/arrow"

@@ -1,10 +1,12 @@
 package com.example.rotatingreel
 
+import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
 import android.view.animation.RotateAnimation
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -26,9 +28,11 @@ class ReelActivity : AppCompatActivity() {
     private var animationListener = object : AnimationListener {
         override fun onAnimationStart(p0: Animation?) {
         }
+
         override fun onAnimationEnd(p0: Animation?) {
             calculateResult(rotationAngle)
         }
+
         override fun onAnimationRepeat(p0: Animation?) {
         }
     }
@@ -40,7 +44,31 @@ class ReelActivity : AppCompatActivity() {
         binding.reelView.setOnClickListener {
             rotate()
         }
+        binding.reset.setOnClickListener {
+            clearText()
+            clearImage()
+        }
         initDrawText()
+        initSlider()
+    }
+
+    private fun initSlider() {
+        val mMin = 0
+        val mMax = 100
+        var mCurrent = 50
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            binding.slider.min = mMin
+            binding.slider.max = mMax
+        }
+        binding.slider.progress = mCurrent
+        binding.slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                mCurrent = p1
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {}
+            override fun onStopTrackingTouch(p0: SeekBar?) {}
+        })
     }
 
     private fun rotate() {
@@ -55,7 +83,6 @@ class ReelActivity : AppCompatActivity() {
             duration = DURATION
             fillAfter = true
             setAnimationListener(animationListener)
-            //interpolator = LinearOutSlowInInterpolator()
         }
         binding.reelView.startAnimation(animation)
         rotationAngle = (rotationAngle + toDegrees!! - fromDegrees!!) % FULL_CIRCLE
@@ -77,22 +104,26 @@ class ReelActivity : AppCompatActivity() {
         when (color) {
             TextEnum.RED -> {
                 drawText.textColor = ContextCompat.getColor(this, R.color.red)
-                drawText.text = this.toString()
+                drawText.text = "RED"
             }
+
             TextEnum.YELLOW -> {
                 drawText.textColor = ContextCompat.getColor(this, R.color.yellow)
-                drawText.text = this.toString()
+                drawText.text = "YELLOW"
             }
+
             TextEnum.LIGHT_BLUE -> {
                 drawText.textColor = ContextCompat.getColor(this, R.color.light_blue)
-                drawText.text = this.toString()
+                drawText.text = "LIGHT BLUE"
             }
+
             TextEnum.PURPLE -> {
                 drawText.textColor = ContextCompat.getColor(this, R.color.purple)
-                drawText.text = this.toString()
+                drawText.text = "PURPLE"
             }
         }
         drawText.invalidate()
+        clearImage()
     }
 
     private fun renderImage(color: ImageEnum) {
@@ -106,6 +137,17 @@ class ReelActivity : AppCompatActivity() {
             .transform(CenterCrop())
             .into(binding.image)
         binding.image.invalidate()
+        clearText()
+    }
+
+    private fun clearText() {
+        drawText.text = ""
+        drawText.invalidate()
+    }
+
+    private fun clearImage() {
+        Glide.with(this).clear(binding.image)
+        binding.image.invalidate()
     }
 
     private fun initDrawText() {
@@ -114,10 +156,9 @@ class ReelActivity : AppCompatActivity() {
             clone(binding.root)
         }
         drawText = DrawTextView(this).apply {
-            text = "TESTTESTTESTTESTTEST"
             layoutParams = ConstraintLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                200
             )
             updateLayoutParams<ConstraintLayout.LayoutParams> {
                 startToStart = R.id.parent

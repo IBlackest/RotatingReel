@@ -30,19 +30,18 @@ class ReelView @JvmOverloads constructor (
         isAntiAlias = true
         style = Paint.Style.FILL
     }
+    private var sweepAngle = 360f / colors.size
+    private var startAngle = 90f
 
     override fun onDraw(canvas: Canvas) {
         viewWidth = this.measuredWidth
         viewHeight = this.measuredHeight
 
-        if (viewWidth > viewHeight){
-            side = viewHeight
+        side = if (viewWidth > viewHeight){
+            viewHeight
         } else {
-            side = viewWidth
+            viewWidth
         }
-
-        val sweepAngle: Float = (360f / colors.size)
-        var startAngle = 90f
 
         for (color in colors) {
             paint.color = color
