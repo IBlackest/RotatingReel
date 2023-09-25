@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.core.content.ContextCompat
 
-class ReelView @JvmOverloads constructor (
+class ReelView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -40,7 +40,7 @@ class ReelView @JvmOverloads constructor (
 
         canvas.drawColor(Color.BLACK)
 
-        side = if (viewWidth > viewHeight){
+        side = if (viewWidth > viewHeight) {
             viewHeight
         } else {
             viewWidth
@@ -53,7 +53,8 @@ class ReelView @JvmOverloads constructor (
                 ((viewHeight / 2) - (side / 2)).toFloat(),
                 ((viewWidth / 2) + (side / 2)).toFloat(),
                 ((viewHeight / 2) + (side / 2)).toFloat(),
-                startAngle, sweepAngle, true, paint)
+                startAngle, sweepAngle, true, paint
+            )
             startAngle += sweepAngle
         }
     }

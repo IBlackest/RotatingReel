@@ -35,7 +35,12 @@ class DrawTextView @JvmOverloads constructor(
         paint.getTextBounds(text, 0, text.length, rect)
         textWidth = paint.measureText(text)
         textHeight = rect.height().toFloat()
-        canvas.drawText(text, viewWidth / 2f - textWidth / 2, viewHeight / 2f + textHeight / 2, paint)
+        canvas.drawText(
+            text,
+            viewWidth / 2f - textWidth / 2,
+            viewHeight / 2f + textHeight / 2,
+            paint
+        )
     }
 
     companion object {

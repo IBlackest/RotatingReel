@@ -12,7 +12,7 @@ class VerticalSlider @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
-): AppCompatSeekBar(context, attrs, defStyle) {
+) : AppCompatSeekBar(context, attrs, defStyle) {
 
     init {
         initView(context)
@@ -49,6 +49,7 @@ class VerticalSlider @JvmOverloads constructor(
                 progress = max - (max * event.y / height).toInt()
                 onSizeChanged(width, height, 0, 0)
             }
+
             MotionEvent.ACTION_CANCEL -> {
             }
         }

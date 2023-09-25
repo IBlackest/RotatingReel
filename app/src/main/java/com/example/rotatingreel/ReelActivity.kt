@@ -10,7 +10,6 @@ import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -26,35 +25,93 @@ class ReelActivity : AppCompatActivity() {
     private var rotationAngle = 0f
     private var reelWidth = 0
     private var reelHeight = 0
-    private var reelMarginTop = 0
-    private var pixels = 0
-    private lateinit var params: LayoutParams
-
-    private var animationListener = object : AnimationListener {
-        override fun onAnimationStart(p0: Animation?) {
-        }
-
-        override fun onAnimationEnd(p0: Animation?) {
-            calculateResult(rotationAngle)
-        }
-
-        override fun onAnimationRepeat(p0: Animation?) {
-        }
-    }
+    private lateinit var reelParams: LayoutParams
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityReelBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding = ActivityReelBinding.inflate(layoutInflater)
+        reelParams = binding.reelView.layoutParams as LayoutParams
         binding.reelView.setOnClickListener {
             rotate()
         }
+        initDrawText()
+        initSlider()
         binding.reset.setOnClickListener {
             clearText()
             clearImage()
         }
-        initDrawText()
-        initSlider()
+    }
+
+    private fun rotate() {
+        val pivotX = binding.reelView.width / 2f
+        val pivotY = binding.reelView.height / 2f
+        fromDegrees = if (fromDegrees == null) 0f else toDegrees!! % FULL_CIRCLE
+        toDegrees = Random.nextInt(
+            1,
+            FULL_CIRCLE.toInt() * MAX_ROTATIONS_NUMBER - FULL_CIRCLE.toInt()
+        ) + FULL_CIRCLE
+        val animation = RotateAnimation(fromDegrees!!, toDegrees!!, pivotX, pivotY).apply {
+            duration = DURATION
+            fillAfter = true
+            setAnimationListener(
+                object : AnimationListener {
+                    override fun onAnimationStart(p0: Animation?) {
+                    }
+
+                    override fun onAnimationEnd(p0: Animation?) {
+                        renderUi(UiDataProvider.provideData(applicationContext, rotationAngle))
+                    }
+
+                    override fun onAnimationRepeat(p0: Animation?) {
+                    }
+                }
+            )
+        }
+        binding.reelView.startAnimation(animation)
+        rotationAngle = (rotationAngle + toDegrees!! - fromDegrees!!) % FULL_CIRCLE
+    }
+
+    private fun renderUi(color: ColorData) {
+        when (color) {
+            is ColorData.WithText -> renderText(color.colorId, color.text)
+            is ColorData.WithImage -> renderImage(color.imageUri)
+        }
+    }
+
+    private fun renderText(colorId: Int, colorText: String) {
+        drawText.textColor = colorId
+        drawText.text = colorText
+        drawText.invalidate()
+        clearImage()
+    }
+
+    private fun renderImage(uri: String) {
+        Glide.with(this)
+            .load(uri)
+            .transform(CenterCrop())
+            .into(binding.image)
+        clearText()
+    }
+
+    private fun initDrawText() {
+        val constraintSet = ConstraintSet()
+        with(constraintSet) {
+            clone(binding.root)
+        }
+        drawText = DrawTextView(this).apply {
+            layoutParams = LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                200
+            )
+            updateLayoutParams<LayoutParams> {
+                startToStart = R.id.parent
+                endToEnd = R.id.parent
+                bottomToTop = R.id.image
+            }
+        }
+        binding.root.addView(drawText)
     }
 
     private fun initSlider() {
@@ -78,81 +135,11 @@ class ReelActivity : AppCompatActivity() {
     }
 
     private fun changeReelSize(progress: Int) {
-        params = binding.reelView.layoutParams as LayoutParams
         reelWidth = binding.reelView.width
         reelHeight = binding.reelView.height
-        pixels = progress * 4
-        params.width = reelWidth + pixels
-        params.height = reelHeight + pixels
-        binding.reelView.layoutParams = params
-    }
-
-    private fun rotate() {
-        val pivotX = binding.reelView.width / 2f
-        val pivotY = binding.reelView.height / 2f
-        fromDegrees = if (fromDegrees == null) 0f else toDegrees!! % FULL_CIRCLE
-        toDegrees = Random.nextInt(
-            1,
-            FULL_CIRCLE.toInt() * MAX_ROTATIONS_NUMBER - FULL_CIRCLE.toInt()
-        ) + FULL_CIRCLE
-        val animation = RotateAnimation(fromDegrees!!, toDegrees!!, pivotX, pivotY).apply {
-            duration = DURATION
-            fillAfter = true
-            setAnimationListener(animationListener)
-        }
-        binding.reelView.startAnimation(animation)
-        rotationAngle = (rotationAngle + toDegrees!! - fromDegrees!!) % FULL_CIRCLE
-    }
-
-    private fun calculateResult(rotationAngle: Float) {
-        when (rotationAngle) {
-            in 0f..<SECTOR_ANGLE -> renderText(TextEnum.RED)
-            in SECTOR_ANGLE..<SECTOR_ANGLE * 2 -> renderImage(ImageEnum.ORANGE)
-            in SECTOR_ANGLE * 2..<SECTOR_ANGLE * 3 -> renderText((TextEnum.YELLOW))
-            in SECTOR_ANGLE * 3..<SECTOR_ANGLE * 4 -> renderImage((ImageEnum.GREEN))
-            in SECTOR_ANGLE * 4..<SECTOR_ANGLE * 5 -> renderText((TextEnum.LIGHT_BLUE))
-            in SECTOR_ANGLE * 5..<SECTOR_ANGLE * 6 -> renderImage((ImageEnum.DEEP_BLUE))
-            in SECTOR_ANGLE * 6..<SECTOR_ANGLE * 7 -> renderText((TextEnum.PURPLE))
-        }
-    }
-
-    private fun renderText(color: TextEnum) {
-        when (color) {
-            TextEnum.RED -> {
-                drawText.textColor = ContextCompat.getColor(this, R.color.red)
-                drawText.text = "RED"
-            }
-
-            TextEnum.YELLOW -> {
-                drawText.textColor = ContextCompat.getColor(this, R.color.yellow)
-                drawText.text = "YELLOW"
-            }
-
-            TextEnum.LIGHT_BLUE -> {
-                drawText.textColor = ContextCompat.getColor(this, R.color.light_blue)
-                drawText.text = "LIGHT BLUE"
-            }
-
-            TextEnum.PURPLE -> {
-                drawText.textColor = ContextCompat.getColor(this, R.color.purple)
-                drawText.text = "PURPLE"
-            }
-        }
-        drawText.invalidate()
-        clearImage()
-    }
-
-    private fun renderImage(color: ImageEnum) {
-        val imageUri = when (color) {
-            ImageEnum.ORANGE -> ORANGE_URI
-            ImageEnum.GREEN -> GREEN_URI
-            ImageEnum.DEEP_BLUE -> DEEP_BLUE_URI
-        }
-        Glide.with(this)
-            .load(imageUri)
-            .transform(CenterCrop())
-            .into(binding.image)
-        clearText()
+        reelParams.width = reelWidth + progress * 4
+        reelParams.height = reelHeight + progress * 4
+        binding.reelView.layoutParams = reelParams
     }
 
     private fun clearText() {
@@ -164,40 +151,9 @@ class ReelActivity : AppCompatActivity() {
         Glide.with(this).clear(binding.image)
     }
 
-    private fun initDrawText() {
-        val constraintSet = ConstraintSet()
-        with(constraintSet) {
-            clone(binding.root)
-        }
-        drawText = DrawTextView(this).apply {
-            layoutParams = LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                200
-            )
-            updateLayoutParams<LayoutParams> {
-                startToStart = R.id.parent
-                endToEnd = R.id.parent
-                bottomToTop = R.id.image
-            }
-        }
-        binding.root.addView(drawText)
-    }
-
-    enum class ImageEnum {
-        ORANGE, GREEN, DEEP_BLUE
-    }
-
-    enum class TextEnum {
-        RED, YELLOW, LIGHT_BLUE, PURPLE
-    }
-
     companion object {
-        private const val SECTOR_ANGLE = 360f / 7
         private const val DURATION = 6000L
         private const val FULL_CIRCLE = 360f
         private const val MAX_ROTATIONS_NUMBER = 10
-        private const val ORANGE_URI = "https://i.ibb.co/9r0S382/Orange.jpg/100x100bb.jpg"
-        private const val GREEN_URI = "https://i.ibb.co/Sw3yvJ7/Green.jpg/100x100bb.jpg"
-        private const val DEEP_BLUE_URI = "https://i.ibb.co/BCsb44m/DeepBlue.jpg/100x100bb.jpg"
     }
 }
