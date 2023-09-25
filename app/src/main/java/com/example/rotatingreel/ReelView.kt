@@ -2,13 +2,10 @@ package com.example.rotatingreel
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import kotlin.math.min
 
 class ReelView @JvmOverloads constructor(
     context: Context,
@@ -40,8 +37,6 @@ class ReelView @JvmOverloads constructor(
         viewWidth = this.measuredWidth
         viewHeight = this.measuredHeight
 
-        canvas.drawColor(Color.BLACK)
-
         side = if (viewWidth > viewHeight) {
             viewHeight
         } else {
@@ -60,30 +55,6 @@ class ReelView @JvmOverloads constructor(
             startAngle += sweepAngle
         }
     }
-
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        val xPosition = event.x
-        val yPosition = event.y
-        val circleCenterX = this.measuredWidth / 2
-        val circleCenterY = this.measuredHeight / 2
-
-        //if (touchInCircle(xPosition, yPosition, circleCenterX, circleCenterY)) performClick()
-        return touchInCircle(xPosition, yPosition, circleCenterX, circleCenterY)
-    }
-
-    private fun touchInCircle(
-        xPosition: Float,
-        yPosition: Float,
-        circleCenterX: Int,
-        circleCenterY: Int
-    ): Boolean {
-        val circleRadius = min(circleCenterX, circleCenterY)
-        return (xPosition < circleCenterX + circleRadius
-                && xPosition > circleCenterX - circleRadius
-                && yPosition < circleCenterY + circleRadius
-                && yPosition > circleCenterY - circleRadius)
-    }
-
 
     companion object {
         private const val FULL_CIRCLE = 360f
