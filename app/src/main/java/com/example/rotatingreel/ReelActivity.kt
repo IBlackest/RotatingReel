@@ -26,6 +26,17 @@ class ReelActivity : AppCompatActivity() {
     private var reelWidth = 0
     private var reelHeight = 0
     private lateinit var reelParams: LayoutParams
+    private val animationListener = object : AnimationListener {
+        override fun onAnimationStart(p0: Animation?) {
+        }
+
+        override fun onAnimationEnd(p0: Animation?) {
+            renderUi(UiDataProvider.provideData(applicationContext, rotationAngle))
+        }
+
+        override fun onAnimationRepeat(p0: Animation?) {
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,21 +66,10 @@ class ReelActivity : AppCompatActivity() {
         val animation = RotateAnimation(fromDegrees!!, toDegrees!!, pivotX, pivotY).apply {
             duration = DURATION
             fillAfter = true
-            setAnimationListener(
-                object : AnimationListener {
-                    override fun onAnimationStart(p0: Animation?) {
-                    }
-
-                    override fun onAnimationEnd(p0: Animation?) {
-                        renderUi(UiDataProvider.provideData(applicationContext, rotationAngle))
-                    }
-
-                    override fun onAnimationRepeat(p0: Animation?) {
-                    }
-                }
-            )
+            setAnimationListener(animationListener)
         }
         binding.reelView.startAnimation(animation)
+        binding.reelView.requestLayout()
         rotationAngle = (rotationAngle + toDegrees!! - fromDegrees!!) % FULL_CIRCLE
     }
 
@@ -103,7 +103,7 @@ class ReelActivity : AppCompatActivity() {
         drawText = DrawTextView(this).apply {
             layoutParams = LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                200
+                DRAW_TEXT_HEIGHT
             )
             updateLayoutParams<LayoutParams> {
                 startToStart = R.id.parent
@@ -115,9 +115,9 @@ class ReelActivity : AppCompatActivity() {
     }
 
     private fun initSlider() {
-        val min = 0
-        val max = 100
-        var current = 50
+        val min = SLIDER_MIN
+        val max = SLIDER_MAX
+        var current = SLIDER_CURRENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             binding.slider.min = min
             binding.slider.max = max
@@ -155,5 +155,9 @@ class ReelActivity : AppCompatActivity() {
         private const val DURATION = 6000L
         private const val FULL_CIRCLE = 360f
         private const val MAX_ROTATIONS_NUMBER = 10
+        private const val SLIDER_MIN = 0
+        private const val SLIDER_MAX = 100
+        private const val SLIDER_CURRENT = 50
+        private const val DRAW_TEXT_HEIGHT = 200
     }
 }
