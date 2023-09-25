@@ -29,9 +29,9 @@ class ReelActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityReelBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding = ActivityReelBinding.inflate(layoutInflater)
         reelParams = binding.reelView.layoutParams as LayoutParams
         binding.reelView.setOnClickListener {
             rotate()

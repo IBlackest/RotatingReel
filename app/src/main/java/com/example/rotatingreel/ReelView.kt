@@ -5,8 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
+import kotlin.math.min
 
 class ReelView @JvmOverloads constructor(
     context: Context,
@@ -31,8 +33,8 @@ class ReelView @JvmOverloads constructor(
         isAntiAlias = true
         style = Paint.Style.FILL
     }
-    private var sweepAngle = 360f / colors.size
-    private var startAngle = 90f
+    private var sweepAngle = FULL_CIRCLE / colors.size
+    private var startAngle = START_ANGLE
 
     override fun onDraw(canvas: Canvas) {
         viewWidth = this.measuredWidth
@@ -57,5 +59,34 @@ class ReelView @JvmOverloads constructor(
             )
             startAngle += sweepAngle
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val xPosition = event.x
+        val yPosition = event.y
+        val circleCenterX = this.measuredWidth / 2
+        val circleCenterY = this.measuredHeight / 2
+
+        //if (touchInCircle(xPosition, yPosition, circleCenterX, circleCenterY)) performClick()
+        return touchInCircle(xPosition, yPosition, circleCenterX, circleCenterY)
+    }
+
+    private fun touchInCircle(
+        xPosition: Float,
+        yPosition: Float,
+        circleCenterX: Int,
+        circleCenterY: Int
+    ): Boolean {
+        val circleRadius = min(circleCenterX, circleCenterY)
+        return (xPosition < circleCenterX + circleRadius
+                && xPosition > circleCenterX - circleRadius
+                && yPosition < circleCenterY + circleRadius
+                && yPosition > circleCenterY - circleRadius)
+    }
+
+
+    companion object {
+        private const val FULL_CIRCLE = 360f
+        private const val START_ANGLE = 90f
     }
 }
