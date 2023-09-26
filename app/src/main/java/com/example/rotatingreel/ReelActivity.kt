@@ -106,7 +106,7 @@ class ReelActivity : AppCompatActivity() {
         drawText = DrawTextView(this).apply {
             layoutParams = LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                DRAW_TEXT_HEIGHT
+                resources.getDimension(R.dimen.draw_text_height).toInt()
             )
             updateLayoutParams<LayoutParams> {
                 startToStart = R.id.parent
@@ -150,8 +150,8 @@ class ReelActivity : AppCompatActivity() {
         reelWidth = binding.reelView.width
         reelHeight = binding.reelView.height
         reelParams.apply {
-            width = reelWidth + progress * 4
-            height = reelHeight + progress * 4
+            width = reelWidth + progress * SIZE_MULTIPLIER
+            height = reelHeight + progress * SIZE_MULTIPLIER
         }
         binding.reelView.layoutParams = reelParams
     }
@@ -174,6 +174,6 @@ class ReelActivity : AppCompatActivity() {
         private const val SLIDER_MIN = 0
         private const val SLIDER_MAX = 100
         private const val SLIDER_CURRENT = 50
-        private const val DRAW_TEXT_HEIGHT = 200
+        private const val SIZE_MULTIPLIER = 6
     }
 }
