@@ -1,11 +1,10 @@
 package com.example.rotatingreel
 
+import android.animation.Animator
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.Animation.AnimationListener
-import android.view.animation.RotateAnimation
+import android.view.animation.DecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
@@ -26,17 +25,6 @@ class ReelActivity : AppCompatActivity() {
     private var reelWidth = 0
     private var reelHeight = 0
     private lateinit var reelParams: LayoutParams
-    private val animationListener = object : AnimationListener {
-        override fun onAnimationStart(p0: Animation?) {
-        }
-
-        override fun onAnimationEnd(p0: Animation?) {
-            renderUi(UiDataProvider.provideData(applicationContext, rotationAngle))
-        }
-
-        override fun onAnimationRepeat(p0: Animation?) {
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,20 +44,31 @@ class ReelActivity : AppCompatActivity() {
     }
 
     private fun rotate() {
-        val pivotX = binding.reelView.width / 2f
-        val pivotY = binding.reelView.height / 2f
         fromDegrees = if (fromDegrees == null) 0f else toDegrees!! % FULL_CIRCLE
         toDegrees = Random.nextInt(
             1,
             FULL_CIRCLE.toInt() * MAX_ROTATIONS_NUMBER - FULL_CIRCLE.toInt()
         ) + FULL_CIRCLE
-        val animation = RotateAnimation(fromDegrees!!, toDegrees!!, pivotX, pivotY).apply {
-            duration = DURATION
-            fillAfter = true
-            setAnimationListener(animationListener)
-        }
-        binding.reelView.startAnimation(animation)
-        binding.reelView.requestLayout()
+        binding.reelView.animate()
+            .rotationBy(toDegrees!!)
+            .setDuration(DURATION)
+            .setListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {
+                }
+
+                override fun onAnimationEnd(animation: Animator) {
+                    renderUi(UiDataProvider.provideData(applicationContext, rotationAngle))
+                }
+
+                override fun onAnimationCancel(animation: Animator) {
+                }
+
+                override fun onAnimationRepeat(animation: Animator) {
+                }
+
+            })
+            .setInterpolator(DecelerateInterpolator())
+            .start()
         rotationAngle = (rotationAngle + toDegrees!! - fromDegrees!!) % FULL_CIRCLE
     }
 
