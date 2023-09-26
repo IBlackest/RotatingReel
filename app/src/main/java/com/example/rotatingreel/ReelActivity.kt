@@ -127,9 +127,9 @@ class ReelActivity : AppCompatActivity() {
                 slider.max = max
             }
         }
-        binding.apply {
-            slider.progress = current
-            slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        binding.slider.apply {
+            progress = current
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
                     seekbar: SeekBar?,
                     progress: Int,
@@ -142,6 +142,7 @@ class ReelActivity : AppCompatActivity() {
                 override fun onStartTrackingTouch(p0: SeekBar?) {}
                 override fun onStopTrackingTouch(p0: SeekBar?) {}
             })
+            thumbOffset = 0
         }
     }
 
