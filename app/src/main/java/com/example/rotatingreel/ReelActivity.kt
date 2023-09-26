@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
@@ -19,7 +18,6 @@ class ReelActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityReelBinding
     private lateinit var drawText: DrawTextView
-    private var fromDegrees: Float? = null
     private var toDegrees: Float? = null
     private var rotationAngle = 0f
     private var reelWidth = 0
@@ -44,11 +42,11 @@ class ReelActivity : AppCompatActivity() {
     }
 
     private fun rotate() {
-        fromDegrees = if (fromDegrees == null) 0f else toDegrees!! % FULL_CIRCLE
         toDegrees = Random.nextInt(
             1,
             FULL_CIRCLE.toInt() * MAX_ROTATIONS_NUMBER - FULL_CIRCLE.toInt()
         ) + FULL_CIRCLE
+        rotationAngle = (rotationAngle + toDegrees!!) % FULL_CIRCLE
         binding.reelView.animate()
             .rotationBy(toDegrees!!)
             .setDuration(DURATION)
@@ -67,9 +65,7 @@ class ReelActivity : AppCompatActivity() {
                 }
 
             })
-            .setInterpolator(DecelerateInterpolator())
             .start()
-        rotationAngle = (rotationAngle + toDegrees!! - fromDegrees!!) % FULL_CIRCLE
     }
 
     private fun renderUi(color: ColorData) {
