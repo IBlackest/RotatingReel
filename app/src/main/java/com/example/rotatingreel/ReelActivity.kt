@@ -47,6 +47,7 @@ class ReelActivity : AppCompatActivity() {
     }
 
     private fun rotate() {
+        binding.reelView.isClickable = false
         toDegrees = Random.nextInt(
             1,
             FULL_CIRCLE.toInt() * MAX_ROTATIONS_NUMBER - FULL_CIRCLE.toInt()
@@ -61,6 +62,7 @@ class ReelActivity : AppCompatActivity() {
 
                 override fun onAnimationEnd(animation: Animator) {
                     renderUi(UiDataProvider.provideData(applicationContext, rotationAngle))
+                    binding.reelView.isClickable = true
                 }
 
                 override fun onAnimationCancel(animation: Animator) {
