@@ -34,8 +34,10 @@ class VerticalSlider @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        canvas.rotate(-90f)
-        canvas.translate(-height.toFloat(), 0f)
+        canvas.apply {
+            rotate(-90f)
+            translate(-height.toFloat(), 0f)
+        }
         super.onDraw(canvas)
     }
 

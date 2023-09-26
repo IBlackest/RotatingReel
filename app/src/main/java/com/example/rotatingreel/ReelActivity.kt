@@ -30,14 +30,18 @@ class ReelActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         reelParams = binding.reelView.layoutParams as LayoutParams
-        binding.reelView.setOnClickListener {
-            rotate()
-        }
         initDrawText()
         initSlider()
-        binding.reset.setOnClickListener {
-            clearText()
-            clearImage()
+
+        binding.apply {
+            reelView.setOnClickListener {
+                rotate()
+            }
+
+            reset.setOnClickListener {
+                clearText()
+                clearImage()
+            }
         }
     }
 
@@ -76,9 +80,11 @@ class ReelActivity : AppCompatActivity() {
     }
 
     private fun renderText(colorId: Int, colorText: String) {
-        drawText.textColor = colorId
-        drawText.text = colorText
-        drawText.invalidate()
+        drawText.apply {
+            textColor = colorId
+            text = colorText
+            invalidate()
+        }
         clearImage()
     }
 
@@ -114,32 +120,44 @@ class ReelActivity : AppCompatActivity() {
         val max = SLIDER_MAX
         var current = SLIDER_CURRENT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            binding.slider.min = min
-            binding.slider.max = max
-        }
-        binding.slider.progress = current
-        binding.slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
-                changeReelSize(progress - current)
-                current = progress
+            binding.apply {
+                slider.min = min
+                slider.max = max
             }
+        }
+        binding.apply {
+            slider.progress = current
+            slider.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekbar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    changeReelSize(progress - current)
+                    current = progress
+                }
 
-            override fun onStartTrackingTouch(p0: SeekBar?) {}
-            override fun onStopTrackingTouch(p0: SeekBar?) {}
-        })
+                override fun onStartTrackingTouch(p0: SeekBar?) {}
+                override fun onStopTrackingTouch(p0: SeekBar?) {}
+            })
+        }
     }
 
     private fun changeReelSize(progress: Int) {
         reelWidth = binding.reelView.width
         reelHeight = binding.reelView.height
-        reelParams.width = reelWidth + progress * 4
-        reelParams.height = reelHeight + progress * 4
+        reelParams.apply {
+            width = reelWidth + progress * 4
+            height = reelHeight + progress * 4
+        }
         binding.reelView.layoutParams = reelParams
     }
 
     private fun clearText() {
-        drawText.text = ""
-        drawText.invalidate()
+        drawText.apply {
+            text = ""
+            invalidate()
+        }
     }
 
     private fun clearImage() {
