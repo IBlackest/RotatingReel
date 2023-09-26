@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
-import android.view.animation.DecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
@@ -13,17 +12,29 @@ import androidx.core.view.updateLayoutParams
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.example.rotatingreel.databinding.ActivityReelBinding
-import kotlin.random.Random
 
 class ReelActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityReelBinding
     private lateinit var drawText: DrawTextView
-    private var toDegrees: Float? = null
-    private var rotationAngle = 0f
     private var reelWidth = 0
     private var reelHeight = 0
     private lateinit var reelParams: LayoutParams
+    private var animatorListener = object : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator) {
+        }
+
+        override fun onAnimationEnd(animation: Animator) {
+            renderUi(UiDataProvider.provideData(applicationContext, binding.reelView.rotationAngle))
+            binding.reelView.isClickable = true
+        }
+
+        override fun onAnimationCancel(animation: Animator) {
+        }
+
+        override fun onAnimationRepeat(animation: Animator) {
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,45 +46,12 @@ class ReelActivity : AppCompatActivity() {
         initSlider()
 
         binding.apply {
-            reelView.setOnClickListener {
-                rotate()
-            }
-
+            reelView.animate().setListener(animatorListener)
             reset.setOnClickListener {
                 clearText()
                 clearImage()
             }
         }
-    }
-
-    private fun rotate() {
-        binding.reelView.isClickable = false
-        toDegrees = Random.nextInt(
-            1,
-            FULL_CIRCLE.toInt() * MAX_ROTATIONS_NUMBER - FULL_CIRCLE.toInt()
-        ) + FULL_CIRCLE
-        rotationAngle = (rotationAngle + toDegrees!!) % FULL_CIRCLE
-        binding.reelView.animate()
-            .rotationBy(toDegrees!!)
-            .setDuration(DURATION)
-            .setListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {
-                }
-
-                override fun onAnimationEnd(animation: Animator) {
-                    renderUi(UiDataProvider.provideData(applicationContext, rotationAngle))
-                    binding.reelView.isClickable = true
-                }
-
-                override fun onAnimationCancel(animation: Animator) {
-                }
-
-                override fun onAnimationRepeat(animation: Animator) {
-                }
-
-            })
-            .setInterpolator(DecelerateInterpolator())
-            .start()
     }
 
     private fun renderUi(color: ColorData) {
@@ -170,9 +148,6 @@ class ReelActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val DURATION = 5000L
-        private const val FULL_CIRCLE = 360f
-        private const val MAX_ROTATIONS_NUMBER = 30
         private const val SLIDER_MIN = 0
         private const val SLIDER_MAX = 100
         private const val SLIDER_CURRENT = 50
