@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.os.Build
 import android.os.Bundle
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
 import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
@@ -69,6 +70,7 @@ class ReelActivity : AppCompatActivity() {
                 }
 
             })
+            .setInterpolator(DecelerateInterpolator())
             .start()
     }
 
@@ -165,9 +167,9 @@ class ReelActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val DURATION = 6000L
+        private const val DURATION = 5000L
         private const val FULL_CIRCLE = 360f
-        private const val MAX_ROTATIONS_NUMBER = 10
+        private const val MAX_ROTATIONS_NUMBER = 30
         private const val SLIDER_MIN = 0
         private const val SLIDER_MAX = 100
         private const val SLIDER_CURRENT = 50
